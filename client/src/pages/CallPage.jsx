@@ -33,8 +33,9 @@ const CallPage = () => {
           borderRadius={"10px"}
           boxShadow={"xl"}
         >
-          <ChatSideBar />
-          <ChatMain />
+          <div>
+            {me.fullname.S} in call room for chat id {session}
+          </div>
         </Flex>
       </Flex>
     </Box>

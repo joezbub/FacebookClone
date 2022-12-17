@@ -1245,6 +1245,20 @@ var newsFeedArticle = function (req, res) {
   });
 }
 
+/*
+Route to open a call. Chat object will show that there is an 
+existing call.
+*/
+var openCall = function (req, res) {
+  var uuid = req.body.uuid;
+  db.updateChatAttribute(uuid, 'call', { N: "1" }, function (err, data) {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.json(data);
+    }
+  });
+}
 
 var routes = {
   login: login,
@@ -1280,6 +1294,7 @@ var routes = {
   get_article: getArticle,
   add_prefix: addPrefix,
   news_feed_article: newsFeedArticle,
+  open_call: openCall,
 
   getSid,
   sendOTP,

@@ -875,6 +875,34 @@ var myDB_getArticle = function (index) {
   return db.query(params).promise();
 }
 
+/*
+Updates a specified chat attribute
+*/
+var myDB_updateUserAttribute = function (uuid, attribute, value, callback) {
+  const params = {
+    TableName: "chats",
+    Key: {
+      "uuid": { S: uuid }
+    },
+    UpdateExpression: "set #attr = :val",
+    ExpressionAttributeNames: {
+      "#attr": attribute
+    },
+    ExpressionAttributeValues: {
+      ":val": value
+    },
+    ReturnValues: "ALL_NEW"
+  };
+  db.updateItem(params, function (err, data) {
+    if (err) {
+      console.log(err);
+      callback(err, null);
+    } else {
+      callback(null, data.Attributes);
+    }
+  });
+}
+
 var database = {
   verifyLoginCredentials: myDB_verifyLoginCredentials,
   createAccount: myDB_createAccount,
@@ -907,6 +935,7 @@ var database = {
   updateMesage: myDB_updateMessage,
   sendMessage: myDB_sendMessage,
   getArticle: myDB_getArticle,
+  updateChatAttribute: myDB_updateUserAttribute,
 };
 
 module.exports = database;

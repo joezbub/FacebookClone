@@ -23,6 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { IonIcon } from "@ionic/react";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../context/ChatProvider";
 import ChatMainHeaderDMIcon from "./ChatMainHeaderDMIcon";
 import InviteFriends from "./InviteFriends";
@@ -33,6 +34,7 @@ export default function ChatMainHeader() {
   const { openChat, setOpenChat, getUser, user, getChats } = ChatState();
   const [peopleString, setPeopleString] = useState("");
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  var navigate = useNavigate();
 
   useEffect(() => {
     const l = JSON.parse(openChat.people.S).filter(
@@ -66,6 +68,21 @@ export default function ChatMainHeader() {
       "_blank",
       "noopener,noreferrer"
     );
+
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        uuid: openChat.uuid.S,
+      }),
+    };
+    fetch("/opencall", requestOptions).then((res) => {
+      if (res.ok) {
+        res.json().then((data) => {
+          setOpenChat(data);
+        });
+      }
+    });
   };
 
   return (
@@ -115,7 +132,7 @@ export default function ChatMainHeader() {
         <Spacer />
 
         <Button ml={3} onClick={openCall} colorScheme="green">
-          Call
+          {openChat.call?.N === "1" ? "Join" : "Call"}
         </Button>
         <Button ml={3} onClick={() => setIsInviteOpen(true)} colorScheme="blue">
           Invite

@@ -71,6 +71,7 @@ app.get('/newssearch', routes.search); // Route to get news search results
 app.get('/article', routes.get_article); // Get a news article by id
 app.post('/newsfeedarticle', routes.news_feed_article); // Route to get an article in news feed
 
+app.post('/opencall', routes.open_call); // Route to open a call with the current chat
 
 /* Run the server */
 
