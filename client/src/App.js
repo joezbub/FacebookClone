@@ -10,6 +10,7 @@ import CategorySelection from "./pages/CategorySelection"
 import WallChakra from "./pages/WallChakra";
 import RegisterPageChakra from "./pages/RegisterPageChakra";
 import ChatPage from "./pages/ChatPage";
+import CallPage from "./pages/CallPage";
 import NewsFeed from "./pages/NewsFeed";
 import NewsSearch from "./pages/NewsSearch";
 
@@ -42,6 +43,9 @@ function App() {
         }></Route>
         <Route path="/newssearch/:input" element={
           <NewsSearch />
+        }></Route>
+        <Route path="/call/:sessionid" element={
+          <CallPage />
         }></Route>
         <Route path="/friendvisualizer" element={<FriendVisualizer />}></Route>
       </Route>
