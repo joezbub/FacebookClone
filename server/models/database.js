@@ -53,7 +53,8 @@ var myDB_createAccount = function (inputUsername, inputPassword, inputFullName, 
     "affiliation": { S: inputAffiliation },
     "birthday": { S: inputBirthday },
     "date": { N: inputDate },
-    "news": { L: inputNews }
+    "news": { L: inputNews },
+    "active": { N: "1" }
   };
 
   var paramsCreate = {
