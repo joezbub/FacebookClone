@@ -6,9 +6,11 @@ import { ChatState } from "../context/ChatProvider";
 import NavBar from "../components/NavBar/NavBar";
 import { HomeState } from "../context/HomeProvider";
 import { useNavigate, useParams } from "react-router-dom";
+import CallBottomBar from "../components/Chat/Call/CallBottomBar";
 
 const CallPage = () => {
   const session = useParams().sessionid;
+  const [callChat, setCallChat] = useState(null);
   const { user } = ChatState();
   const { me } = HomeState();
   var navigate = useNavigate();
@@ -16,13 +18,25 @@ const CallPage = () => {
   // Authentication - make sure user can enter room
   useEffect(() => {
     if (me) {
-      if (!me.chats.L.some((id) => session === id.S)) {
+      if (me.call.S !== session) {
         navigate("/");
       }
     }
   }, [me]);
 
-  return me && user ? (
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/chat?id=" + encodeURI(session), requestOptions).then((res) => {
+      res.json().then((data) => {
+        setCallChat(data);
+      });
+    });
+  }, []);
+
+  return me && user && callChat ? (
     <Box>
       <NavBar />
       <Flex height={"90vh"} align={"center"} justifyContent={"center"}>
@@ -32,10 +46,13 @@ const CallPage = () => {
           overflow={"hidden"}
           borderRadius={"10px"}
           boxShadow={"xl"}
+          flexDir={"column"}
+          justifyContent="space-between"
         >
           <div>
             {me.fullname.S} in call room for chat id {session}
           </div>
+          <CallBottomBar callChat={callChat} setCallChat={setCallChat} />
         </Flex>
       </Flex>
     </Box>

@@ -1246,16 +1246,95 @@ var newsFeedArticle = function (req, res) {
 }
 
 /*
-Route to open a call. Chat object will show that there is an 
-existing call.
+Route to join a call
 */
-var openCall = function (req, res) {
+var joinCall = function (req, res) {
   var uuid = req.body.uuid;
-  db.updateChatAttribute(uuid, 'call', { N: "1" }, function (err, data) {
+  var username = req.body.username;
+  db.getUserAttributes(username, function (err, user) {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.json(data);
+      if ((user.call?.S || uuid) !== uuid) {
+        res.status(400).send("Already in a different call");
+      } else {
+        db.getChat(uuid)
+          .then(chat => {
+            var call = [];
+            if (chat.Items[0].call?.S) {
+              call = JSON.parse(chat.Items[0].call.S);
+            }
+            if (!call.some(item => item.username === username)) {
+              call.push(
+                {
+                  fullname: user.fullname.S,
+                  username: user.username.S,
+                  profilepic: user.profilepic.S
+                }
+              );
+            }
+            db.updateChatAttribute(uuid, 'call', { S: JSON.stringify(call) }, function (err, data) {
+              if (err) {
+                res.status(500).send(err);
+              } else {
+                var out = { chat: data };
+                db.updateUserAttribute(username, 'call', { S: uuid }, function (err, data) {
+                  if (err) {
+                    res.status(500).send(err);
+                  } else {
+                    out.user = data.Attributes;
+                    res.json(out);
+                  }
+                });
+              }
+            });
+          });
+      }
+    }
+  });
+}
+
+/*
+Route to leave a call
+*/
+var leaveCall = function (req, res) {
+  var uuid = req.body.uuid;
+  var username = req.body.username;
+  db.getUserAttributes(username, function (err, user) {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      if ((user.call?.S || "") !== uuid) {
+        res.status(400).send("User in different call");
+      } else {
+        db.getChat(uuid)
+          .then(chat => {
+            var call = [];
+            if (chat.Items[0].call?.S) {
+              call = JSON.parse(chat.Items[0].call.S);
+            }
+            if (!call.some(item => item.username === username)) {
+              res.status(400).send("User in different call");
+            } else {
+              call = call.filter(item => item.username !== username);
+              db.updateChatAttribute(uuid, 'call', { S: JSON.stringify(call) }, function (err, data) {
+                if (err) {
+                  res.status(500).send(err);
+                } else {
+                  var out = { chat: data };
+                  db.updateUserAttribute(username, 'call', { S: "" }, function (err, data) {
+                    if (err) {
+                      res.status(500).send(err);
+                    } else {
+                      out.user = data.Attributes;
+                      res.json(out);
+                    }
+                  });
+                }
+              });
+            }
+          });
+      }
     }
   });
 }
@@ -1294,7 +1373,8 @@ var routes = {
   get_article: getArticle,
   add_prefix: addPrefix,
   news_feed_article: newsFeedArticle,
-  open_call: openCall,
+  join_call: joinCall,
+  leave_call: leaveCall,
 
   getSid,
   sendOTP,

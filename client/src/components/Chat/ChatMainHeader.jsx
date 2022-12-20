@@ -25,13 +25,16 @@ import { IonIcon } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../context/ChatProvider";
+import { HomeState } from "../../context/HomeProvider";
 import ChatMainHeaderDMIcon from "./ChatMainHeaderDMIcon";
 import InviteFriends from "./InviteFriends";
 
 export default function ChatMainHeader() {
   const bg = useColorModeValue("gray.50", "gray.700");
   const username = localStorage.getItem("username");
-  const { openChat, setOpenChat, getUser, user, getChats } = ChatState();
+  const { openChat, setOpenChat, getUser, user, setUser, getChats } =
+    ChatState();
+  const { me, setMe } = HomeState();
   const [peopleString, setPeopleString] = useState("");
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   var navigate = useNavigate();
@@ -62,24 +65,23 @@ export default function ChatMainHeader() {
     });
   };
 
-  const openCall = () => {
-    window.open(
-      "/call/" + encodeURI(openChat.uuid.S),
-      "_blank",
-      "noopener,noreferrer"
-    );
-
+  const joinCall = () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         uuid: openChat.uuid.S,
+        username: user.username.S,
       }),
     };
-    fetch("/opencall", requestOptions).then((res) => {
+
+    fetch("/joincall", requestOptions).then((res) => {
       if (res.ok) {
         res.json().then((data) => {
-          setOpenChat(data);
+          setOpenChat(data.chat);
+          setMe(data.user);
+          setUser(data.user);
+          navigate("/call/" + encodeURI(openChat.uuid.S));
         });
       }
     });
@@ -131,8 +133,15 @@ export default function ChatMainHeader() {
 
         <Spacer />
 
-        <Button ml={3} onClick={openCall} colorScheme="green">
-          {openChat.call?.N === "1" ? "Join" : "Call"}
+        <Button
+          ml={3}
+          onClick={joinCall}
+          disabled={(user.call?.S || openChat.uuid.S) !== openChat.uuid.S}
+          colorScheme="green"
+        >
+          {!openChat.call || JSON.parse(openChat.call?.S || []).length === 0
+            ? "Call"
+            : "Join"}
         </Button>
         <Button ml={3} onClick={() => setIsInviteOpen(true)} colorScheme="blue">
           Invite
