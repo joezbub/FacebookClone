@@ -879,7 +879,7 @@ var myDB_getArticle = function (index) {
 /*
 Updates a specified chat attribute
 */
-var myDB_updateUserAttribute = function (uuid, attribute, value, callback) {
+var myDB_updateChatAttribute = function (uuid, attribute, value, callback) {
   const params = {
     TableName: "chats",
     Key: {
@@ -936,7 +936,7 @@ var database = {
   updateMesage: myDB_updateMessage,
   sendMessage: myDB_sendMessage,
   getArticle: myDB_getArticle,
-  updateChatAttribute: myDB_updateUserAttribute,
+  updateChatAttribute: myDB_updateChatAttribute,
 };
 
 module.exports = database;
