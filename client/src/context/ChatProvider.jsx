@@ -15,6 +15,7 @@ const ChatProvider = ({ children }) => {
   const [searchChat, setSearchChat] = useState(false);
   const [reactionClicked, setReactionClicked] = useState(false);
   const [friendsCache, setFriendsCache] = useState({});
+  const [callChat, setCallChat] = useState(null);
 
   const { me } = HomeState();
 
@@ -109,6 +110,8 @@ const ChatProvider = ({ children }) => {
         socket,
         friendsCache,
         setFriendsCache,
+        callChat,
+        setCallChat,
       }}
     >
       {children}

@@ -32,11 +32,20 @@ import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../../context/ChatProvider";
 import { HomeState } from "../../../context/HomeProvider";
 
-export default function CallBottomBar({ callChat, setCallChat }) {
+export default function CallBottomBar() {
   const bg = useColorModeValue("gray.50", "gray.700");
-  const { openChat, setOpenChat, user, setUser, getUser } = ChatState();
+  const {
+    openChat,
+    setOpenChat,
+    user,
+    setUser,
+    getUser,
+    callChat,
+    setCallChat,
+    socket,
+  } = ChatState();
   const { setMe } = HomeState();
-  const [openMembers, setOpenMembers] = useState(false);
+  const [members, setMembers] = useState(null);
   var navigate = useNavigate();
 
   const handleLeave = () => {
@@ -54,13 +63,21 @@ export default function CallBottomBar({ callChat, setCallChat }) {
     fetch("/leavecall", requestOptions).then((res) => {
       if (res.ok) {
         res.json().then((data) => {
-          setCallChat(data.chat);
+          socket.emit("leave call", callChat.uuid.S);
+          setCallChat(null);
           setMe(data.user);
           setUser(data.user);
         });
       }
     });
   };
+
+  useEffect(() => {
+    if (callChat) {
+      var tmp = JSON.parse(callChat.call.S);
+      setMembers(tmp);
+    }
+  }, [callChat]);
 
   return (
     <Flex
@@ -85,9 +102,10 @@ export default function CallBottomBar({ callChat, setCallChat }) {
         </PopoverTrigger>
         <PopoverContent p={3} width="175px">
           <PopoverArrow />
-          {JSON.parse(callChat.call.S).map((item) => (
-            <Text key={item.username}>{item.fullname}</Text>
-          ))}
+          {members &&
+            members.map((item) => (
+              <Text key={item.username}>{item.fullname}</Text>
+            ))}
         </PopoverContent>
       </Popover>
       <Flex float="right" width="full" flexDir="row-reverse">

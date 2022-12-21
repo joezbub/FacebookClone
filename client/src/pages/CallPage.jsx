@@ -10,8 +10,8 @@ import CallBottomBar from "../components/Chat/Call/CallBottomBar";
 
 const CallPage = () => {
   const session = useParams().sessionid;
-  const [callChat, setCallChat] = useState(null);
-  const { user } = ChatState();
+  const [socketConnected, setSocketConnected] = useState(false);
+  const { user, callChat, setCallChat, socket } = ChatState();
   const { me } = HomeState();
   var navigate = useNavigate();
 
@@ -20,11 +20,13 @@ const CallPage = () => {
     if (me) {
       if (me.call.S !== session) {
         navigate("/");
+      } else {
+        socket.emit("join call", session);
       }
     }
   }, [me]);
 
-  useEffect(() => {
+  const getCallChat = () => {
     const requestOptions = {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -33,6 +35,15 @@ const CallPage = () => {
       res.json().then((data) => {
         setCallChat(data);
       });
+    });
+  };
+
+  useEffect(() => {
+    getCallChat();
+
+    socket.on("connected to call", () => {
+      getCallChat();
+      setSocketConnected(true);
     });
   }, []);
 
@@ -52,7 +63,7 @@ const CallPage = () => {
           <div>
             {me.fullname.S} in call room for chat id {session}
           </div>
-          <CallBottomBar callChat={callChat} setCallChat={setCallChat} />
+          <CallBottomBar />
         </Flex>
       </Flex>
     </Box>

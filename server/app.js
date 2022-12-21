@@ -99,4 +99,13 @@ io.on("connection", (socket) => {
    socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
    socket.on("new message", (data) => socket.in(data.uuid).emit("message received", data.message));
    socket.on("new reaction", (data) => socket.in(data.uuid).emit("reaction received", data));
+
+   socket.on("join call", (uuid) => {
+      socket.join(uuid);
+      socket.in(uuid).emit("connected to call");
+   });
+   socket.on("leave call", (uuid) => {
+      socket.leave(uuid);
+      socket.in(uuid).emit("connected to call");
+   });
 });
