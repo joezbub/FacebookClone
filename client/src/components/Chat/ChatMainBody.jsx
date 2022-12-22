@@ -1,10 +1,11 @@
-import { Avatar, AvatarBadge, Button, Flex, useColorModeValue, FormControl, Input, Spacer, Spinner, Text } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Button, Flex, useColorModeValue, FormControl, Input, Spacer, Spinner, Text, IconButton } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import Lottie from "lottie-react";
 import { ChatState } from '../../context/ChatProvider';
 import animationData from './animations/pinjump.json'
 import Messages from './Messages';
 import UploadImageIcon from './UploadImageIcon';
+import ImagePreview from './ImagePreview';
 
 export default function ChatMainBody(props) {
 
@@ -148,6 +149,7 @@ export default function ChatMainBody(props) {
         ) : (
           <></>
         )}
+        <ImagePreview/>
         <Flex>
           <Input
             variant="filled"
@@ -158,6 +160,10 @@ export default function ChatMainBody(props) {
             onChange={typingHandler}
             ref={(searchChat || reactionClicked) ? null : input => input && input.focus()}
           /> 
+          <input type="file" style={{display: 'none'}} id="file-upload-post"/>
+                <label for='file-upload-post'>
+                <UploadImageIcon/>
+                </label>
         </Flex>
       </FormControl>
     </Flex>
