@@ -1,7 +1,4 @@
-# PennBook
-
-Full names: Joseph Zhang, Arnav Chopra, Sahith Jagarlamudi, Alessandro Keri
-SEAS logins: jzhang25, arnavc, sahith, akeri13
+# Facebook Clone
 
 ## Features Implemented
 
@@ -58,22 +55,6 @@ News feeds :
 3. Groups
 4. Hashtag Support
 5. Privacy Control - limiting who can see a particular post
-
-## Source Files Included
-
-Did you personally write _all_ the code you are submitting
-(other than code from the course web page)?
-[X] Yes
-[ ] No
-
-Did you copy any code from the Internet, or from classmates?
-[ ] Yes
-[X] No
-
-Did you collaborate with anyone on this assignment?
-[ ] Yes
-[X] No
-(Only team members)
 
 ## Instructions
 
